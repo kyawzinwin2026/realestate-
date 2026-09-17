@@ -1,0 +1,802 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEAZT Myanmar Real Estate</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN for Dashboard Pie Chart -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
+        body { font-family: 'Pyidaungsu', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- 2. HEADER -->
+    <header class="relative bg-blue-900 text-white shadow-md">
+        <div id="headerBanner" class="absolute inset-0 bg-cover bg-center opacity-30" style="background-image: url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80');"></div>
+        
+        <div class="relative container mx-auto px-4 py-6 flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center space-x-3 mb-4 md:mb-0">
+                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center overflow-hidden shadow-lg border-2 border-yellow-400">
+                    <img id="logoDisplay" src="https://via.placeholder.com/150/003366/FFFFFF?text=NEAZT" alt="NEAZT Logo" class="w-full h-full object-cover">
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold tracking-wide text-yellow-400">NEAZT Myanmar Real Estate</h1>
+                    <p class="text-xs text-gray-200">သင့်အိမ်မက်များကို ဖန်တီးပေးသော နေရာ</p>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <nav class="flex flex-wrap gap-2 justify-center">
+                <button onclick="switchTab('home')" class="nav-btn px-4 py-2 bg-yellow-500 text-blue-900 font-bold rounded shadow transition hover:bg-yellow-400" data-tab="home">ပင်မစာမျက်နှာ</button>
+                <button onclick="switchTab('sellerRenter')" class="nav-btn px-4 py-2 bg-blue-800 text-white font-semibold rounded shadow transition hover:bg-blue-700" data-tab="sellerRenter">ရောင်းရန်/ငှားရန်တင်မည်</button>
+                <button onclick="switchTab('register')" class="nav-btn px-4 py-2 bg-blue-800 text-white font-semibold rounded shadow transition hover:bg-blue-700" data-tab="register">အကောင့်ဖွင့်ရန်</button>
+                <button onclick="switchTab('agent')" class="nav-btn px-4 py-2 bg-blue-800 text-white font-semibold rounded shadow transition hover:bg-blue-700" data-tab="agent">ကိုယ်စားလှယ် (Agent) မှတ်ပုံတင်ရန်</button>
+                <button onclick="switchTab('contact')" class="nav-btn px-4 py-2 bg-blue-800 text-white font-semibold rounded shadow transition hover:bg-blue-700" data-tab="contact">ဆက်သွယ်ရန်</button>
+                <button onclick="switchTab('admin')" class="nav-btn px-4 py-2 bg-red-600 text-white font-semibold rounded shadow transition hover:bg-red-500" data-tab="admin">Admin ဝင်ရန်</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="container mx-auto px-4 py-8 min-h-[600px]">
+
+        <!-- 1. HOME PAGE -->
+        <section id="tab-home" class="tab-content">
+            <div class="mb-8 text-center">
+                <h2 class="text-3xl font-bold text-blue-900 mb-2">ရောင်းရန်နှင့် ငှားရန် အိမ်ခြံမြေများ</h2>
+                <p class="text-gray-600">သင့်အတွက် အသင့်တော်ဆုံး နေအိမ်များကို ရှာဖွေပါ</p>
+            </div>
+            <div id="homeListingsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </section>
+
+        <!-- DETAIL MODAL -->
+        <div id="detailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-lg max-w-2xl w-full p-6 relative max-h-[90vh] overflow-y-auto">
+                <button onclick="closeDetailModal()" class="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-xl font-bold">&times;</button>
+                <div id="modalContent"></div>
+            </div>
+        </div>
+
+        <!-- 3. SECOND TAB: SELLER / RENTER INPUT -->
+        <section id="tab-sellerRenter" class="tab-content hidden">
+            <div class="mb-6">
+                <h2 class="text-3xl font-bold text-blue-900 mb-1">အိမ်ခြံမြေ ရောင်းရန်/ငှားရန် တင်သွင်းခြင်း</h2>
+                <p class="text-gray-600">ဘယ်ဘက်တွင် ကြိုတင်မြင်ကွင်း (Preview) နှင့် ညာဘက်တွင် အချက်အလက်များ ဖြည့်သွင်းပါ</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow border border-gray-200 sticky top-4 h-fit">
+                    <h3 class="text-lg font-bold text-blue-900 mb-4 border-b pb-2">📋 ကြိုတင်မြင်ကွင်း (Live Preview)</h3>
+                    <div id="previewContainer">
+                        <div class="h-48 bg-gray-200 rounded-lg flex items-center justify-center text-gray-400 mb-4 overflow-hidden" id="previewImgContainer">ဓာတ်ပုံမရှိသေးပါ</div>
+                        <h4 id="prevTitle" class="text-xl font-bold text-gray-800 mb-1">ခေါင်းစဉ် (Title)</h4>
+                        <p id="prevPrice" class="text-lg font-bold text-green-600 mb-2">ဈေးနှုန်း - ကျပ် ၀</p>
+                        <p id="prevType" class="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded mb-2">အမျိုးအစား</p>
+                        <p id="prevLocation" class="text-sm text-gray-600 mb-2">📍 တည်နေရာ - </p>
+                        <p id="prevDesc" class="text-sm text-gray-700">အသေးစိတ်ဖော်ပြချက်...</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
+                    <h3 class="text-lg font-bold text-blue-900 mb-4 border-b pb-2">✍️ အချက်အလက်များ ဖြည့်သွင်းရန်</h3>
+                    <form id="listingForm" onsubmit="submitListing(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">အိမ်ခြံမြေ ခေါင်းစဉ်</label>
+                            <input type="text" id="inputTitle" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">အမျိုးအစား</label>
+                                <select id="inputType" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2">
+                                    <option value="ရောင်းရန်">ရောင်းရန် (For Sale)</option>
+                                    <option value="ငှားရန်">ငှားရန် (For Rent)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">ဈေးနှုန်း</label>
+                                <input type="text" id="inputPrice" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2" placeholder="ဥပမာ - သိန်း ၅၀၀၀">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">တည်နေရာ</label>
+                            <input type="text" id="inputLocation" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">အသေးစိတ် ဖော်ပြချက်</label>
+                            <textarea id="inputDesc" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">ဓာတ်ပုံများ တင်ရန် (အများဆုံး ၇ ပုံ)</label>
+                            <input type="file" id="inputPhotos" accept="image/*" multiple onchange="handlePhotoUpload(event)" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                            <div id="uploadedThumbnails" class="flex gap-2 mt-2 flex-wrap"></div>
+                        </div>
+                        <button type="submit" class="w-full bg-blue-900 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-800 transition">တင်သွင်းမည်</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. THIRD TAB: USER REGISTRATION -->
+        <section id="tab-register" class="tab-content hidden">
+            <div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow border border-gray-200">
+                <h2 class="text-2xl font-bold text-blue-900 mb-2 text-center">အသုံးပြုသူ မှတ်ပုံတင်ရန်</h2>
+                <form onsubmit="submitUserRegister(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">အမည် <span class="text-red-500">*</span></label>
+                        <input type="text" id="regName" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">ဖုန်းနံပါတ် <span class="text-red-500">*</span></label>
+                        <input type="tel" id="regPhone" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">အမျိုးအစား</label>
+                        <select id="regRole" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2">
+                            <option value="ဝယ်သူ (Buyer)">ဝယ်သူ (Buyer)</option>
+                            <option value="ရောင်းသူ (Seller)">ရောင်းသူ (Seller)</option>
+                            <option value="ငှားရမ်းသူ (Renter)">ငှားရမ်းသူ (Renter)</option>
+                            <option value="အိမ်ပိုင်ရှင် (Landlord)">အိမ်ပိုင်ရှင် (Landlord)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">ဘဏ်အချက်အလက်များ (Skip လုပ်နိုင်သည်)</label>
+                        <input type="text" id="regBank" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2">
+                    </div>
+                    <button type="submit" class="w-full bg-blue-900 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-800 transition">စာရင်းသွင်းမည်</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- 4. FOURTH TAB: AGENT REGISTRATION -->
+        <section id="tab-agent" class="tab-content hidden">
+            <div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow border border-gray-200">
+                <h2 class="text-2xl font-bold text-blue-900 mb-2 text-center">ကိုယ်စားလှယ် (Agent) မှတ်ပုံတင်ရန်</h2>
+                <form onsubmit="submitAgentRegister(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">အမည် <span class="text-red-500">*</span></label>
+                        <input type="text" id="agentName" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">ဖုန်းနံပါတ် <span class="text-red-500">*</span></label>
+                        <input type="tel" id="agentPhone" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">လုပ်ကိုင်မည့် မြို့နယ်/ဧရိယာ</label>
+                        <input type="text" id="agentArea" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">အတွေ့အကြုံ (နှစ်)</label>
+                        <input type="text" id="agentExp" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2">
+                    </div>
+                    <button type="submit" class="w-full bg-blue-900 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-800 transition">Agent အဖြစ် မှတ်ပုံတင်မည်</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- 5. CONTACT US PAGE -->
+        <section id="tab-contact" class="tab-content hidden">
+            <div class="max-w-xl mx-auto bg-white p-8 rounded-lg shadow border border-gray-200">
+                <h2 class="text-2xl font-bold text-blue-900 mb-4 text-center">ဆက်သွယ်ရန် (Contact Us)</h2>
+                <div class="space-y-4 text-gray-700 bg-blue-50 p-6 rounded-lg">
+                    <p><strong>🏢 ကုမ္ပဏီအမည် -</strong> NEAZT Myanmar Real Estate</p>
+                    <p><strong>📍 လိပ်စာ -</strong> ရန်ကုန်မြို့၊ မြန်မာနိုင်ငံ</p>
+                    <p><strong>📞 ဖုန်းနံပါတ် -</strong> ၀၉-xxxxxxxx</p>
+                    <p><strong>✉️ အီးမေးလ် -</strong> contact@neaztmyanmar.com</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6 & 7. ADMIN TAB (Login + Dashboard + Management) -->
+        <section id="tab-admin" class="tab-content hidden">
+            <!-- ADMIN LOGIN SCREEN (Default if not logged in) -->
+            <div id="adminLoginWrapper" class="max-w-md mx-auto bg-white p-8 rounded-lg shadow border border-gray-200">
+                <h2 class="text-2xl font-bold text-red-600 mb-4 text-center">🔐 Admin အကောင့်ဝင်ရန်</h2>
+                <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">User Name</label>
+                        <input type="text" id="adminUser" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2" placeholder="admin">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Password</label>
+                        <input type="password" id="adminPass" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2" placeholder="password">
+                    </div>
+                    <button type="submit" class="w-full bg-red-600 text-white font-bold py-2 px-4 rounded-md hover:bg-red-500 transition">ဝင်မည်</button>
+                </form>
+            </div>
+
+            <!-- ADMIN DASHBOARD PANEL (Shown after successful login) -->
+            <div id="adminDashboardWrapper" class="hidden space-y-8">
+                <div class="flex justify-between items-center border-b pb-4">
+                    <div>
+                        <h2 class="text-3xl font-bold text-red-600 mb-1">Admin Dashboard & Management</h2>
+                        <p class="text-gray-600">ကုမ္ပဏီဝင်ငွေ၊ အရောင်းအဝယ်နှင့် မှတ်ပုံတင်စာရင်းများ စီမံရန်</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="adminLogout()" class="bg-gray-500 text-white px-3 py-1 rounded text-sm hover:bg-gray-600">Logout ထွက်ရန်</button>
+                        <button onclick="clearAllData()" class="bg-red-100 text-red-700 px-3 py-1 rounded text-sm hover:bg-red-200">ဒေတာအားလုံး ရှင်းမည်</button>
+                    </div>
+                </div>
+
+                <!-- 4. DASHBOARD: Summary Cards & Pie Chart -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
+                        <h4 class="text-sm font-bold text-gray-500 mb-1">စုစုပေါင်း Net Income (Revenue)</h4>
+                        <p id="totalNetRevenue" class="text-3xl font-extrabold text-green-600">ကျပ် ၀</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow border border-gray-200 col-span-2 flex items-center justify-around">
+                        <div class="w-48 h-48">
+                            <canvas id="incomePieChart"></canvas>
+                        </div>
+                        <div class="text-sm space-y-2">
+                            <p class="flex items-center gap-2"><span class="w-3 h-3 bg-blue-600 rounded-full inline-block"></span> အရောင်းမှ Net Income: <strong id="saleIncomeText">ကျပ် ၀</strong></p>
+                            <p class="flex items-center gap-2"><span class="w-3 h-3 bg-yellow-500 rounded-full inline-block"></span> အငှားမှ Net Income: <strong id="rentIncomeText">ကျပ် ၀</strong></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. SOLD / RENTED MANAGEMENT SCREEN & REPORT -->
+                <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
+                        <h3 class="text-xl font-bold text-blue-900">📊 ရောင်းပြီး/ငှားပြီး ပြီးစီးခဲ့သော စာရင်းများ (Transactions & Report)</h3>
+                        
+                        <!-- Date Range Filter & Print Report -->
+                        <div class="flex flex-wrap gap-2 items-center text-sm">
+                            <span>စတင်ရက်:</span>
+                            <input type="date" id="reportStartDate" class="border rounded p-1">
+                            <span>ပြီးဆုံးရက်:</span>
+                            <input type="date" id="reportEndDate" class="border rounded p-1">
+                            <button onclick="filterReport()" class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-500">စစ်ဆေးရန်</button>
+                            <button onclick="printReport()" class="bg-gray-800 text-white px-3 py-1 rounded hover:bg-gray-700">ပရင်ထုတ်ရန် (Print)</button>
+                        </div>
+                    </div>
+                    
+                    <div id="soldTransactionsContainer" class="overflow-x-auto">
+                        <!-- Loaded via JS -->
+                    </div>
+                </div>
+
+                <!-- Active Listings Management -->
+                <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
+                    <h3 class="text-xl font-bold text-blue-900 mb-4">🏠 တင်ထားဆဲ အိမ်ခြံမြေစာရင်းများ (အရောင်း/အငှား ပြီးပါက Mark as Sold/Rented လုပ်ရန်)</h3>
+                    <div id="adminListingsContainer" class="overflow-x-auto"></div>
+                </div>
+
+                <!-- Users & Agents Registrations -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
+                        <h3 class="text-xl font-bold text-blue-900 mb-4">👥 အသုံးပြုသူ မှတ်ပုံတင်စာရင်းများ</h3>
+                        <div id="adminUsersContainer" class="overflow-x-auto"></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
+                        <h3 class="text-xl font-bold text-blue-900 mb-4">👔 Agent မှတ်ပုံတင်စာရင်းများ</h3>
+                        <div id="adminAgentsContainer" class="overflow-x-auto"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MARK AS SOLD / RENTED MODAL -->
+    <div id="soldModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-lg max-w-lg w-full p-6 relative">
+            <button onclick="closeSoldModal()" class="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-xl font-bold">&times;</button>
+            <h3 class="text-xl font-bold text-blue-900 mb-4">အရောင်း/အငှား ပြီးမြောက်ကြောင်း အချက်အလက်ဖြည့်ရန်</h3>
+            <form onsubmit="confirmSoldListing(event)" class="space-y-4">
+                <input type="hidden" id="soldListingId">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">အတည်ပြုဈေး (Final Agreed Price - ကျပ်)</label>
+                    <input type="text" id="finalPrice" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2" placeholder="ဥပမာ - သိန်း ၄၈၀၀">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Agent Fee ရာခိုင်နှုန်း (%)</label>
+                    <input type="number" step="0.1" id="agentFeePercent" required value="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">ပါဝင်သော Agent(များ) ရွေးချယ်ရန် (One or More)</label>
+                    <div id="agentCheckboxGroup" class="max-h-32 overflow-y-auto border p-2 rounded space-y-1">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Agent များအား ခွဲဝေပေးမည့် စုစုပေါင်းငွေ (Total Payout to Agents - ကျပ်)</label>
+                    <input type="text" id="totalAgentPayout" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2" placeholder="ဥပမာ - သိန်း ၅၀">
+                </div>
+                <button type="submit" class="w-full bg-green-600 text-white font-bold py-2 px-4 rounded-md hover:bg-green-500 transition">အတည်ပြု၍ သိမ်းဆည်းမည်</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-blue-900 text-white text-center py-6 mt-12">
+        <p>&copy; 2026 NEAZT Myanmar Real Estate. All rights reserved.</p>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        let listings = JSON.parse(localStorage.getItem('neazt_listings')) || [
+            { id: 1, title: 'ဗဟန်းတွင် လုံးချင်းအိမ် ရောင်းမည်', type: 'ရောင်းရန်', price: 'သိန်း ၈၅၀၀', location: 'ဗဟန်းမြို့နယ်', desc: 'အခန်းကျယ် ၄ ခန်း', photos: ['https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=600&q=80'] },
+            { id: 2, title: 'ကျောက်တံတား ကွန်ဒို အခန်းငှားရန်', type: 'ငှားရန်', price: '၁ လလျှင် ၁၅ သိန်း', location: 'ကျောက်တံတား', desc: 'ပြင်ဆင်ပြီး', photos: ['https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=600&q=80'] }
+        ];
+        let users = JSON.parse(localStorage.getItem('neazt_users')) || [];
+        let agents = JSON.parse(localStorage.getItem('neazt_agents')) || [
+            { name: 'ဦးအောင်ကျော်', phone: '09123456789' },
+            { name: 'ဒေါ်သီတာ', phone: '09987654321' }
+        ];
+        let soldTransactions = JSON.parse(localStorage.getItem('neazt_sold')) || [];
+        let currentUploadedPhotos = [];
+        let isAdminLoggedIn = localStorage.getItem('neazt_admin_logged') === 'true';
+        let pieChartInstance = null;
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-yellow-500', 'text-blue-900', 'font-bold');
+                btn.classList.add('bg-blue-800', 'text-white', 'font-semibold');
+                if(btn.dataset.tab === tabId && tabId !== 'admin') {
+                    btn.classList.remove('bg-blue-800');
+                    btn.classList.add('bg-yellow-500', 'text-blue-900', 'font-bold');
+                }
+            });
+
+            if(tabId === 'home') renderHomeListings();
+            if(tabId === 'admin') checkAdminAuth();
+            window.scrollTo(0, 0);
+        }
+
+        // 1. Admin Authentication Handler
+        function handleAdminLogin(event) {
+            event.preventDefault();
+            let u = document.getElementById('adminUser').value;
+            let p = document.getElementById('adminPass').value;
+            if(u === 'admin' && p === 'neazt123') {
+                isAdminLoggedIn = true;
+                localStorage.setItem('neazt_admin_logged', 'true');
+                checkAdminAuth();
+            } else {
+                alert('User name သို့မဟုတ် Password မှားယွင်းနေပါသည်။ (Default: admin / neazt123)');
+            }
+        }
+
+        function adminLogout() {
+            isAdminLoggedIn = false;
+            localStorage.removeItem('neazt_admin_logged');
+            checkAdminAuth();
+        }
+
+        function checkAdminAuth() {
+            if(isAdminLoggedIn) {
+                document.getElementById('adminLoginWrapper').classList.add('hidden');
+                document.getElementById('adminDashboardWrapper').classList.remove('hidden');
+                renderAdminDashboard();
+            } else {
+                document.getElementById('adminLoginWrapper').classList.remove('hidden');
+                document.getElementById('adminDashboardWrapper').classList.add('hidden');
+            }
+        }
+
+        // Home Page Listings & Slider
+        function renderHomeListings() {
+            const grid = document.getElementById('homeListingsGrid');
+            grid.innerHTML = '';
+            if(listings.length === 0) {
+                grid.innerHTML = '<p class="text-gray-500 col-span-3 text-center py-8">လက်ရှိတွင် အိမ်ခြံမြေစာရင်း မရှိသေးပါ။</p>';
+                return;
+            }
+            listings.forEach((item, index) => {
+                let card = document.createElement('div');
+                card.className = 'bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 flex flex-col justify-between';
+                let photos = item.photos && item.photos.length > 0 ? item.photos : ['https://via.placeholder.com/400x300?text=No+Image'];
+                let sliderHtml = `
+                    <div class="relative h-56 bg-gray-200 overflow-hidden group" id="slider-${index}">
+                        <div class="flex transition-transform duration-500 ease-in-out h-full" id="slides-track-${index}" style="transform: translateX(0px);">
+                            ${photos.map(p => `<img src="${p}" class="w-full h-full object-cover flex-shrink-0">`).join('')}
+                        </div>
+                        ${photos.length > 1 ? `
+                            <button onclick="moveSlide(${index}, -1)" class="absolute left-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition">&larr;</button>
+                            <button onclick="moveSlide(${index}, 1)" class="absolute right-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition">&rarr;</button>
+                        ` : ''}
+                        <span class="absolute top-2 right-2 px-2 py-1 bg-blue-900 text-white text-xs font-bold rounded">${item.type}</span>
+                    </div>
+                `;
+                card.innerHTML = `
+                    ${sliderHtml}
+                    <div class="p-4 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold text-lg text-gray-800 mb-1">${item.title}</h3>
+                            <p class="text-green-600 font-bold mb-2">${item.price}</p>
+                            <p class="text-sm text-gray-500 mb-2">📍 ${item.location}</p>
+                        </div>
+                        <button onclick="openDetailModal(${item.id})" class="mt-4 w-full bg-blue-900 text-white py-2 rounded hover:bg-blue-800 transition text-sm font-semibold">အသေးစိတ်ကြည့်ရန် & ယူရန်</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+                card.dataset.currentSlide = 0;
+                card.dataset.totalSlides = photos.length;
+            });
+        }
+
+        function moveSlide(index, direction) {
+            let track = document.getElementById(`slides-track-${index}`);
+            let total = parseInt(track.parentElement.parentElement.dataset.totalSlides);
+            let current = parseInt(track.parentElement.parentElement.dataset.currentSlide);
+            current = (current + direction + total) % total;
+            track.parentElement.parentElement.dataset.currentSlide = current;
+            track.style.transform = `translateX(-${current * 100}%)`;
+        }
+
+        function openDetailModal(id) {
+            let item = listings.find(l => l.id === id);
+            if(!item) return;
+            let photosHtml = item.photos.map(p => `<img src="${p}" class="w-full h-48 object-cover rounded-lg">`).join('');
+            document.getElementById('modalContent').innerHTML = `
+                <h3 class="text-2xl font-bold text-blue-900 mb-2">${item.title}</h3>
+                <p class="text-xl font-bold text-green-600 mb-3">${item.price}</p>
+                <p class="text-sm text-gray-600 mb-4"><strong>တည်နေရာ:</strong> ${item.location}</p>
+                <p class="text-gray-700 mb-6 bg-gray-50 p-4 rounded">${item.desc}</p>
+                <div class="grid grid-cols-2 gap-2 mb-6">${photosHtml}</div>
+                <div class="border-t pt-4 flex justify-between items-center">
+                    <span class="text-sm text-gray-500">ဤအိမ်ကို ဝယ်ယူရန်/ငှားရမ်းရန် စာရင်းသွင်းပါ</span>
+                    <button onclick="triggerRegisterRedirect()" class="bg-yellow-500 text-blue-900 font-bold px-6 py-2 rounded shadow hover:bg-yellow-400">စာရင်းသွင်းပြီး ရယူမည်</button>
+                </div>
+            `;
+            document.getElementById('detailModal').classList.remove('hidden');
+        }
+
+        function closeDetailModal() { document.getElementById('detailModal').classList.add('hidden'); }
+        function triggerRegisterRedirect() { closeDetailModal(); switchTab('register'); alert('ကျေးဇူးပြု၍ ဝယ်ယူရန်/ငှားရမ်းရန်အတွက် အကောင့်ဖွင့်ပေးပါ။'); }
+
+        // Seller/Renter input preview
+        const inputTitle = document.getElementById('inputTitle');
+        const inputPrice = document.getElementById('inputPrice');
+        const inputType = document.getElementById('inputType');
+        const inputLocation = document.getElementById('inputLocation');
+        const inputDesc = document.getElementById('inputDesc');
+
+        [inputTitle, inputPrice, inputType, inputLocation, inputDesc].forEach(el => {
+            el.addEventListener('input', () => {
+                document.getElementById('prevTitle').innerText = inputTitle.value || 'ခေါင်းစဉ်';
+                document.getElementById('prevPrice').innerText = inputPrice.value ? 'ဈေးနှုန်း - ' + inputPrice.value + ' ကျပ်' : 'ဈေးနှုန်း - ကျပ် ၀';
+                document.getElementById('prevType').innerText = inputType.value;
+                document.getElementById('prevLocation').innerText = '📍 တည်နေရာ - ' + (inputLocation.value || '');
+                document.getElementById('prevDesc').innerText = inputDesc.value || 'အသေးစိတ်ဖော်ပြချက်...';
+            });
+        });
+
+        function handlePhotoUpload(event) {
+            let files = event.target.files;
+            currentUploadedPhotos = [];
+            let thumbContainer = document.getElementById('uploadedThumbnails');
+            thumbContainer.innerHTML = '';
+            let limit = Math.min(files.length, 7);
+            for(let i=0; i<limit; i++) {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    currentUploadedPhotos.push(e.target.result);
+                    let img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'w-16 h-16 object-cover rounded border';
+                    thumbContainer.appendChild(img);
+                    if(currentUploadedPhotos.length === 1) {
+                        document.getElementById('previewImgContainer').innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+                    }
+                }
+                reader.readAsDataURL(files[i]);
+            }
+        }
+
+        function submitListing(event) {
+            event.preventDefault();
+            listings.push({
+                id: Date.now(),
+                title: inputTitle.value,
+                type: inputType.value,
+                price: inputPrice.value,
+                location: inputLocation.value,
+                desc: inputDesc.value,
+                photos: currentUploadedPhotos.length > 0 ? currentUploadedPhotos : ['https://via.placeholder.com/400x300?text=No+Image']
+            });
+            localStorage.setItem('neazt_listings', JSON.stringify(listings));
+            alert('တင်သွင်းမှု အောင်မြင်ပါသည်။');
+            document.getElementById('listingForm').reset();
+            currentUploadedPhotos = [];
+            document.getElementById('uploadedThumbnails').innerHTML = '';
+            document.getElementById('previewImgContainer').innerHTML = 'ဓာတ်ပုံမရှိသေးပါ';
+            switchTab('home');
+        }
+
+        function submitUserRegister(event) {
+            event.preventDefault();
+            users.push({
+                name: document.getElementById('regName').value,
+                phone: document.getElementById('regPhone').value,
+                role: document.getElementById('regRole').value,
+                bank: document.getElementById('regBank').value || 'မထည့်ထားပါ',
+                date: new Date().toISOString().split('T')[0]
+            });
+            localStorage.setItem('neazt_users', JSON.stringify(users));
+            alert('အကောင့်ဖွင့်ခြင်း အောင်မြင်ပါသည်။');
+            event.target.reset();
+            switchTab('home');
+        }
+
+        function submitAgentRegister(event) {
+            event.preventDefault();
+            let newAgent = {
+                name: document.getElementById('agentName').value,
+                phone: document.getElementById('agentPhone').value,
+                area: document.getElementById('agentArea').value,
+                exp: document.getElementById('agentExp5') || '-',
+                date: new Date().toISOString().split('T')[0]
+            };
+            agents.push(newAgent);
+            localStorage.setItem('neazt_agents', JSON.stringify(agents));
+            alert('Agent အဖြစ် မှတ်ပုံတင်ခြင်း အောင်မြင်ပါသည်။');
+            event.target.reset();
+            switchTab('home');
+        }
+
+        // 2 & 3 & 4. ADMIN DASHBOARD & TRANSACTIONS MANAGEMENT
+        function renderAdminDashboard(filteredData = null) {
+            // Render Active Listings for Admin
+            let lContainer = document.getElementById('adminListingsContainer');
+            if(listings.length === 0) {
+                lContainer.innerHTML = '<p class="text-gray-500">တင်ထားဆဲ အိမ်ခြံမြေ မရှိပါ။</p>';
+            } else {
+                let html = `<table class="min-w-full divide-y divide-gray-200 text-sm">
+                    <thead class="bg-gray-50"><tr>
+                        <th class="px-4 py-2 text-left">ခေါင်းစဉ်</th>
+                        <th class="px-4 py-2 text-left">အမျိုးအစား</th>
+                        <th class="px-4 py-2 text-left">ဈေးနှုန်း</th>
+                        <th class="px-4 py-2 text-center">လုပ်ဆောင်ချက်</th>
+                    </tr></thead><tbody class="divide-y divide-gray-200">`;
+                listings.forEach(l => {
+                    html += `<tr>
+                        <td class="px-4 py-2 font-medium">${l.title}</td>
+                        <td class="px-4 py-2">${l.type}</td>
+                        <td class="px-4 py-2">${l.price}</td>
+                        <td class="px-4 py-2 text-center flex gap-2 justify-center">
+                            <button onclick="openSoldModal(${l.id})" class="bg-green-600 text-white px-2 py-1 rounded text-xs hover:bg-green-500">ရောင်းပြီး/ငှားပြီး အဖြစ်ပြောင်းရန်</button>
+                            <button onclick="deleteListing(${l.id})" class="bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-500">ဖျက်ရန်</button>
+                        </td>
+                    </tr>`;
+                });
+                html += `</tbody></table>`;
+                lContainer.innerHTML = html;
+            }
+
+            // Render Sold Transactions
+            let dataToRender = filteredData || soldTransactions;
+            let sContainer = document.getElementById('soldTransactionsContainer');
+            if(dataToRender.length === 0) {
+                sContainer.innerHTML = '<p class="text-gray-500">ပြီးမြောက်သော အရောင်းအဝယ် စာရင်း မရှိသေးပါ။</p>';
+            } else {
+                let html = `<table class="min-w-full divide-y divide-gray-200 text-sm" id="reportTable">
+                    <thead class="bg-gray-50"><tr>
+                        <th class="px-3 py-2 text-left">ရက်စွဲ</th>
+                        <th class="px-3 py-2 text-left">ခေါင်းစဉ်</th>
+                        <th class="px-3 py-2 text-left">အမျိုးအစား</th>
+                        <th class="px-3 py-2 text-left">အတည်ပြုဈေး</th>
+                        <th class="px-3 py-2 text-left">Agent Fee (%)</th>
+                        <th class="px-3 py-2 text-left">ရွေးချယ်ထားသော Agent(များ)</th>
+                        <th class="px-3 py-2 text-left">Total Payout</th>
+                        <th class="px-3 py-2 text-left text-green-700 font-bold">Net Income</th>
+                    </tr></thead><tbody class="divide-y divide-gray-200">`;
+                dataToRender.forEach(t => {
+                    html += `<tr>
+                        <td class="px-3 py-2">${t.date}</td>
+                        <td class="px-3 py-2 font-medium">${t.title}</td>
+                        <td class="px-3 py-2">${t.type}</td>
+                        <td class="px-3 py-2">${t.finalPrice}</td>
+                        <td class="px-3 py-2">${t.feePercent}%</td>
+                        <td class="px-3 py-2">${t.selectedAgents.join(', ')}</td>
+                        <td class="px-3 py-2">${t.totalPayout} ကျပ်</td>
+                        <td class="px-3 py-2 text-green-700 font-bold">${t.netIncome} ကျပ်</td>
+                    </tr>`;
+                });
+                html += `</tbody></table>`;
+                sContainer.innerHTML = html;
+            }
+
+            // Render Users & Agents tables
+            renderSimpleTable('adminUsersContainer', users, ['အမည်', 'ဖုန်း', 'အမျိုးအစား', 'ဘဏ်', 'ရက်စွဲ'], ['name', 'phone', 'role', 'bank', 'date']);
+            renderSimpleTable('adminAgentsContainer', agents, ['အမည်', 'ဖုန်း', 'ဧရိယာ', 'အတွေ့အကြုံ', 'ရက်စွဲ'], ['name', 'phone', 'area', 'exp', 'date']);
+
+            // Update Dashboard Metrics & Chart
+            updateDashboardMetrics(soldTransactions);
+        }
+
+        function renderSimpleTable(containerId, data, headers, keys) {
+            let container = document.getElementById(containerId);
+            if(data.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-sm">ဒေတာ မရှိပါ။</p>';
+                return;
+            }
+            let html = `<table class="min-w-full divide-y divide-gray-200 text-sm"><thead class="bg-gray-50"><tr>`;
+            headers.forEach(h => html += `<th class="px-3 py-2 text-left">${h}</th>`);
+            html += `</tr></thead><tbody class="divide-y divide-gray-200">`;
+            data.forEach(item => {
+                html += `<tr>`;
+                keys.forEach(k => html += `<td class="px-3 py-2">${item[k] || '-'}</td>`);
+                html += `</tr>`;
+            });
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+        }
+
+        // Open Modal to mark property as Sold/Rented
+        function openSoldModal(id) {
+            let item = listings.find(l => l.id === id);
+            if(!item) return;
+            document.getElementById('soldListingId').value = item.id;
+            
+            // Render agent checkboxes
+            let agContainer = document.getElementById('agentCheckboxGroup');
+            agContainer.innerHTML = '';
+            if(agents.length === 0) {
+                agContainer.innerHTML = '<p class="text-xs text-gray-500">မှတ်ပုံတင်ထားသော Agent မရှိပါ။</p>';
+            } else {
+                agents.forEach(a => {
+                    agContainer.innerHTML += `<label class="flex items-center space-x-2 text-sm"><input type="checkbox" name="selectedAgent" value="${a.name}" class="rounded"> <span>${a.name} (${a.phone})</span></label>`;
+                });
+            }
+            document.getElementById('soldModal').classList.remove('hidden');
+        }
+
+        function closeSoldModal() { document.getElementById('soldModal').classList.add('hidden'); }
+
+        // Confirm sold transaction and calculate Net Income
+        function confirmSoldListing(event) {
+            event.preventDefault();
+            let id = parseInt(document.getElementById('soldListingId').value);
+            let item = listings.find(l => l.id === id);
+            if(!item) return;
+
+            let finalPriceVal = document.getElementById('finalPrice').value;
+            let feePercent = parseFloat(document.getElementById('agentFeePercent').value);
+            let totalPayoutVal = parseFloat(document.getElementById('totalAgentPayout').value) || 0;
+
+            // Gather selected agents
+            let selectedAgents = [];
+            document.querySelectorAll('input[name="selectedAgent"]:checked').forEach(cb => {
+                selectedAgents.push(cb.value);
+            });
+
+            // Calculate Net Income: Total Agent Fee - Total Payout to agents
+            // Assuming numerical estimate parsing or straightforward calculation
+            // For simplicity, if total fee collected is estimated via feePercent or user input total fee:
+            // Let's compute estimated total agent fee from finalPrice if possible, or parse numeric values.
+            // Let's assume finalPrice contains numbers or string like 'သိန်း ၅၀၀၀'. Let's convert numeric rough estimate or let user enter clean numbers.
+            // Let's simplify Net Income = Total Agent Fee Collected - Total Payout.
+            // Let's calculate Total Fee Collected based on a numerical value extracted or entered. Let's make user enter numbers or calculate from finalPrice if digits exist.
+            let numericPrice = parseFloat(finalPriceVal.replace(/[^0-9.]/g, '')) || 1000;
+            // If price is in lakhs e.g. 5000 lakhs, total fee = numericPrice * (feePercent / 100)
+            let totalAgentFeeCollected = numericPrice * (feePercent / 100); 
+            let netIncome = totalAgentFeeCollected - totalPayoutVal;
+
+            let transaction = {
+                id: Date.now(),
+                listingId: item.id,
+                title: item.title,
+                type: item.type,
+                finalPrice: finalPriceVal,
+                feePercent: feePercent,
+                selectedAgents: selectedAgents.length > 0 ? selectedAgents : ['Agent မပါ'],
+                totalPayout: totalPayoutVal,
+                netIncome: netIncome.toFixed(2),
+                date: new Date().toISOString().split('T')[0]
+            };
+
+            soldTransactions.push(transaction);
+            localStorage.setItem('neazt_sold', JSON.stringify(soldTransactions));
+
+            // Remove from active listings
+            listings = listings.filter(l => l.id !== id);
+            localStorage.setItem('neazt_listings', JSON.stringify(listings));
+
+            closeSoldModal();
+            renderAdminDashboard();
+            alert('အရောင်းအဝယ် ပြီးမြောက်မှု အောင်မြင်စွာ မှတ်တမ်းတင်ပြီးပါပြီ။');
+        }
+
+        // Date Range Filtering and Printing Report
+        function filterReport() {
+            let start = document.getElementById('reportStartDate').value;
+            let end = document.getElementById('reportEndDate').value;
+            if(!start || !end) {
+                alert('ကျေးဇူးပြု၍ စတင်ရက်နှင့် ပြီးဆုံးရက်ကို ရွေးချယ်ပါ။');
+                return;
+            }
+            let filtered = soldTransactions.filter(t => t.date >= start && t.date <= end);
+            renderAdminDashboard(filtered);
+        }
+
+        function printReport() {
+            let printWindow = window.open('', '', 'height=600,width=800');
+            printWindow.document.write('<html><head><title>NEAZT Report</title>');
+            printWindow.document.write('<style>body{font-family:sans-serif;padding:20px;} table{width:100%;border-collapse:collapse;margin-top:20px;} th,td{border:1px solid #ddd;padding:8px;text-align:left;font-size:12px;} th{background-color:#f2f2f2;}</style>');
+            printWindow.document.write('</head><body>');
+            printWindow.document.write('<h2 style="color:navy;text-align:center;">NEAZT Myanmar Real Estate - အရောင်း/အငှား Report</h2>');
+            printWindow.document.write(document.getElementById('soldTransactionsContainer').innerHTML);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        // 4. Dashboard Metrics & Pie Chart
+        function updateDashboardMetrics(transactions) {
+            let totalNet = 0;
+            let saleNet = 0;
+            let rentNet = 0;
+
+            transactions.forEach(t => {
+                let net = parseFloat(t.netIncome) || 0;
+                totalNet += net;
+                if(t.type === 'ရောင်းရန်') {
+                    saleNet += net;
+                } else {
+                    rentNet += net;
+                }
+            });
+
+            document.getElementById('totalNetRevenue').innerText = totalNet.toLocaleString() + ' (ယူနစ်)';
+            document.getElementById('saleIncomeText').innerText = saleNet.toLocaleString() + ' (ယူနစ်)';
+            document.getElementById('rentIncomeText').innerText = rentNet.toLocaleString() + ' (ယူနစ်)';
+
+            // Render Pie Chart using Chart.js
+            let ctx = document.getElementById('incomePieChart').getContext('2d');
+            if(pieChartInstance) {
+                pieChartInstance.destroy();
+            }
+            pieChartInstance = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['အရောင်းမှ Income', 'အငှားမှ Income'],
+                    datasets: [{
+                        data: [saleNet, rentNet],
+                        backgroundColor: ['#2563eb', '#f59e0b']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        function deleteListing(id) {
+            if(confirm('ဤအိမ်ခြံမြေစာရင်းကို ဖျက်ရန် သေချာပါသလား?')) {
+                listings = listings.filter(l => l.id !== id);
+                localStorage.setItem('neazt_listings', JSON.stringify(listings));
+                renderAdminDashboard();
+            }
+        }
+
+        function clearAllData() {
+            if(confirm('ဒေတာအားလုံးကို ရှင်းလင်းရန် သေချာပါသလား?')) {
+                localStorage.clear();
+                listings = [];
+                users = [];
+                agents = [];
+                soldTransactions = [];
+                renderAdminDashboard();
+                alert('ရှင်းလင်းပြီးပါပြီ။');
+            }
+        }
+
+        window.onload = function() {
+            renderHomeListings();
+            if(isAdminLoggedIn) {
+                checkAdminAuth();
+            }
+        };
+    </script>
+</body>
+</html>
